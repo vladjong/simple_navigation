@@ -68,4 +68,69 @@ const double GraphAlgorithms::getShortestPathBetweenVertices(Graph &graph, int v
     return minRoad[vertex2];
 }
 
+const int GraphAlgorithms::randomChoose() {
+    std::random_device rd;
+    std::default_random_engine engine(rd());
+    std::uniform_int_distribution<int> posRand(0, graph_.getSize());
+    return posRand(engine);
+}
+
+void GraphAlgorithms::initPheromones() {
+    for (int i = 0; i < graph_.getSize(); i++) {
+        for (int j = 0; j < graph_.getSize(); j++) {
+            if (pheromones_(i, j) != 0) {
+                pheromones_(i, j) = 3;
+            }
+        }
+    }
+}
+
+// Clear memory!!!
+void GraphAlgorithms::generateAnt() {
+    for (int i = 0; i < graph_.getSize(); i++) {
+        int position = randomChoose();
+        ants_.push_back(new Ant(position, pheromones_, graph_.getMatrix()));
+    }
+}
+
+void GraphAlgorithms::updatePheromones() {
+    for (int i = 0; i < graph_.getSize(); i++) {
+        pheromones_ += ants_[i]->getPheromones();
+    }
+    pheromones_ *= 1 / graph_.getSize();
+}
+
+std::vector<int> &GraphAlgorithms::findDistance(double pathTemp) {
+    for (int i = 0; i < graph_.getSize(); i++) {
+        if (pathTemp == ants_[i]->getLmin()) {
+            return ants_[i]->getPath();
+        }
+    }
+}
+
+void GraphAlgorithms::updateTsmResult(TsmResult &result) {
+    std::vector<double> path;
+    for (int i = 0; i < graph_.getSize(); i++) {
+        path.push_back(ants_[i]->getLmin());
+    }
+    std::vector<double>::iterator result = std::min_element(path.begin(), path.end());
+    double pathTemp = std::distance(path.begin(), result);
+    if (pathTemp < result.distance) {
+        result.distance = pathTemp;
+        result.vertices = findDistance(pathTemp);
+    }
+}
+
+const struct TsmResults &GraphAlgorithms::solveTravelingSalesmanProblem(Graph &graph) {
+    initPheromones();
+    int iteration = 0;
+    TsmResult result;
+    while (iteration < 10) {
+        generateAnt();
+        updatePheromones();
+        updateTsmResult(result);
+    }
+    return result;
+}
+
 }  // namespace s21

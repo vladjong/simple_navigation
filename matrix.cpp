@@ -21,7 +21,6 @@ Matrix Matrix::operator=(const Matrix& other) {
 
 double& Matrix::operator()(int i, int j) { return matrix_[i][j]; }
 
-
 inline void Matrix::allocateMatrix(int rows, int cols) {
     rows_ = rows;
     cols_ = cols;
@@ -48,5 +47,35 @@ inline void Matrix::copyMatrix(double** other_matrix) {
         }
     }
 }
+
+void Matrix::sum_matrix(const Matrix& other) {
+    if (rows_ != other.rows_ || cols_ != other.cols_) {
+        throw std::out_of_range("Incorrect input, matrices should have the same size");
+    }
+    for (int i = 0; i < rows_; i++) {
+        for (int j = 0; j < cols_; j++) {
+            matrix_[i][j] = matrix_[i][j] + other.matrix_[i][j];
+        }
+    }
+}
+
+void Matrix::mul_number(const double num) {
+    for (int i = 0; i < rows_; i++) {
+        for (int j = 0; j < cols_; j++) {
+            matrix_[i][j] *= num;
+        }
+    }
+}
+
+Matrix& Matrix::operator+=(const Matrix& other) {
+    sum_matrix(other);
+    return *this;
+}
+
+Matrix& Matrix::operator*=(const double value) {
+    mul_number(value);
+    return *this;
+}
+
 
 }  // namespace s21

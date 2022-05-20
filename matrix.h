@@ -5,7 +5,7 @@
 namespace s21 {
 
 class Matrix {
- private:
+  private:
     int rows_, cols_;
     double** matrix_;
 
@@ -14,12 +14,15 @@ class Matrix {
     Matrix(int rows, int cols);
     Matrix(const Matrix& other);
     ~Matrix();
-    // Accessors
+
     int getRows() { return rows_; }
     int getCols() { return cols_; }
-    // Operators
     Matrix operator=(const Matrix& other);
     double& operator()(int i, int j);
+    void sum_matrix(const Matrix& other);
+    void mul_number(const double num);
+    Matrix& operator+=(const Matrix& other);
+    Matrix& operator*=(const double value);
 
  private:
     inline void allocateMatrix(int rows, int cols);
