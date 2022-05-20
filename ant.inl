@@ -4,18 +4,19 @@ namespace s21 {
 
 void Ant::initTabu() {
     for (int i = 0; i < matrixGraph_.getRows(); i++) {
-        tabu_.push_back(false);
+        tabu_.push_back(true);
     }
-    tabu_[position_] = true;
+    tabu_[position_] = false;
 }
 
-const std::map<int, double>& Ant::determAvalibleWays() {
+const std::map<int, double> Ant::determAvalibleWays() {
     std::map<int, double> avalibleWays;
     for (int i = 0; i < matrixGraph_.getRows(); i++) {
-        if (matrixGraph_(position_, i) != 0) {
+        if (matrixGraph_(position_, i) != 0 && tabu_[i]) {
             avalibleWays.insert(std::make_pair(i, matrixGraph_(position_, i)));
         }
     }
+    return avalibleWays;
 }
 
 double Ant::calculateProbability(std::map<int, double>& avalibleWays, int index) {
@@ -29,45 +30,57 @@ double Ant::calculateProbability(std::map<int, double>& avalibleWays, int index)
     return probability / divisor;
 }
 
-const std::map<int, double>& Ant::calculateProbabilityWays() {
+const std::map<int, double> Ant::calculateProbabilityWays() {
     std::map<int, double> probabilities;
     std::map<int, double> avalibleWays = determAvalibleWays();
     double currentProbability = 0;
     for (auto it = avalibleWays.begin(); it != avalibleWays.end(); ++it) {
+        std::cout << it->first << " " << it->second << "\n";
+    }
+    for (auto it = avalibleWays.begin(); it != avalibleWays.end(); ++it) {
         currentProbability += calculateProbability(avalibleWays, it->first);
+        std::cout << currentProbability << " ";
         probabilities.insert(std::make_pair(it->first, currentProbability));
     }
+    std::cout << "\n";
     return probabilities;
 }
 
 const double randomChoose() {
     std::random_device rd;
     std::default_random_engine engine(rd());
-    std::uniform_int_distribution<int> choise(0, 100);
+    std::uniform_int_distribution<int> choise(0, 99);
     return choise(engine);
 }
 
 void Ant::chooseWay(std::map<int, double>& probabilities) {
+    if (probabilities.size() == 1) {
+        position_ = probabilities.begin()->first;
+    }
     double random = randomChoose();
+    std::cout << "random " << random << "\n";
     for (auto it = probabilities.begin(); it != probabilities.end(); ++it) {
-        if (random < it->second) {
+        if (random <= it->second) {
             position_ = it->first;
+            break;
         }
     }
 }
 
 void Ant::calculatePath(const std::vector<int>& path) {
-    for (int i = 0; i < path.size(); i++) {
-        if (i != path.size() - 1) {
-            lmin_ += matrixGraph_(path[i], path[i + 1]);
-        } else {
-            lmin_ += matrixGraph_(path[i], path[0]);
-        }
+    std::cout << lmin_ << "\n";
+    std::cout << "PAS: " << path[0] <<  path[1] <<  path[2] <<  path[3] << "\n"; 
+    for (int i = 0; i < path.size() - 1; i++) {
+        lmin_ += matrixGraph_(path[i], path[i + 1]);
+        std::cout << lmin_ << " ";
     }
+    std::cout << "\n";
+    lmin_ += matrixGraph_(path[path.size() - 1], path[0]);
+    std::cout << "result: " << lmin_ << "\n";
 }
 
 void Ant::updatePheromones(const std::vector<int>& path) {
-    double tempTeta = kQ /lmin_;
+    double tempTeta = kQ / lmin_;
     for (int i = 1; i < path.size(); i++) {
         pheromones_(path[0], path[i]) *= (1 - kP);
         pheromones_(path[0], path[i]) += tempTeta;
@@ -75,16 +88,25 @@ void Ant::updatePheromones(const std::vector<int>& path) {
 }
 
 void Ant::runAlgorithm() {
+    std::cout << "begin position " << position_ << "\n";
     path_.push_back(position_);
     initTabu();
-    for (int i = 0; i < matrixGraph_.getRows(); i++) {
+    for (int i = 0; i < matrixGraph_.getRows() - 1; i++) {
         std::map<int, double> probabilities = calculateProbabilityWays();
         chooseWay(probabilities);
-        tabu_[position_] = true;
+        std::cout << "POSITION " << position_ << "\n";
+        tabu_[position_] = false;
         path_.push_back(position_);
     }
     calculatePath(path_);
+    // pheromones_.print();
     updatePheromones(path_);
+    pheromones_.print();
+    std::cout << "path: ";
+    for (auto&i : path_) {
+        std::cout << i << " ";
+    }
+    std::cout << "\n";
 }
 
 }  // namespace s21

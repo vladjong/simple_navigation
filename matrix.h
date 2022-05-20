@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <iostream>
 
 namespace s21 {
 
@@ -23,6 +24,8 @@ class Matrix {
     void mul_number(const double num);
     Matrix& operator+=(const Matrix& other);
     Matrix& operator*=(const double value);
+
+    void print();
 
  private:
     inline void allocateMatrix(int rows, int cols);

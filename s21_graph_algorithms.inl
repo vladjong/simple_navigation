@@ -2,7 +2,7 @@
 
 namespace s21 {
 
-const std::vector<int> &GraphAlgorithms::breadthFirstSearch(Graph &graph, int startVertex) {
+const std::vector<int> GraphAlgorithms::breadthFirstSearch(Graph &graph, int startVertex) {
     queue<int> myQueue;
     std::vector<bool> used(graph.getSize(), false);
     std::vector<int> visited;
@@ -23,7 +23,7 @@ const std::vector<int> &GraphAlgorithms::breadthFirstSearch(Graph &graph, int st
     return visited;
 }
 
-const std::vector<int> &GraphAlgorithms::depthFirstSearch(Graph &graph, int startVertex) {
+const std::vector<int> GraphAlgorithms::depthFirstSearch(Graph &graph, int startVertex) {
     stack<int> myStack;
     std::vector<bool> used(graph.getSize(), false);
     std::vector<int> visited;
@@ -71,7 +71,7 @@ const double GraphAlgorithms::getShortestPathBetweenVertices(Graph &graph, int v
 const int GraphAlgorithms::randomChoose() {
     std::random_device rd;
     std::default_random_engine engine(rd());
-    std::uniform_int_distribution<int> posRand(0, graph_.getSize());
+    std::uniform_int_distribution<int> posRand(0, graph_.getSize() - 1);
     return posRand(engine);
 }
 
@@ -95,40 +95,56 @@ void GraphAlgorithms::generateAnt() {
 
 void GraphAlgorithms::updatePheromones() {
     for (int i = 0; i < graph_.getSize(); i++) {
+        ants_[i]->runAlgorithm();
         pheromones_ += ants_[i]->getPheromones();
     }
-    pheromones_ *= 1 / graph_.getSize();
+    pheromones_ *= 1.0 /graph_.getSize();
+    pheromones_.print();
 }
 
-std::vector<int> &GraphAlgorithms::findDistance(double pathTemp) {
+std::vector<int> GraphAlgorithms::findDistance(double pathTemp) {
+    int index = 0;
     for (int i = 0; i < graph_.getSize(); i++) {
         if (pathTemp == ants_[i]->getLmin()) {
-            return ants_[i]->getPath();
+            index = i;
+            break;
         }
     }
+    return ants_[index]->getPath();
 }
 
 void GraphAlgorithms::updateTsmResult(TsmResult &result) {
     std::vector<double> path;
     for (int i = 0; i < graph_.getSize(); i++) {
         path.push_back(ants_[i]->getLmin());
+        std::cout << ants_[i]->getLmin() << " ";
     }
-    std::vector<double>::iterator result = std::min_element(path.begin(), path.end());
-    double pathTemp = std::distance(path.begin(), result);
-    if (pathTemp < result.distance) {
-        result.distance = pathTemp;
-        result.vertices = findDistance(pathTemp);
+    auto minElement = std::min_element(path.begin(), path.end());
+    if (*minElement < result.distance) {
+        result.distance = *minElement;
+        result.vertices = findDistance(*minElement);
     }
+    std::cout << "DISTANCE: " << result.distance;
 }
 
-const struct TsmResults &GraphAlgorithms::solveTravelingSalesmanProblem(Graph &graph) {
+void GraphAlgorithms::clear() {
+    for (int i = 0; i < graph_.getSize(); i++) {
+        delete ants_[i];
+    }
+    ants_.clear();
+}
+
+const TsmResult GraphAlgorithms::solveTravelingSalesmanProblem(Graph &graph) {
+    graph_ = graph;
+    pheromones_ = graph_.getMatrix();
     initPheromones();
-    int iteration = 0;
     TsmResult result;
-    while (iteration < 10) {
+    for (int i = 0; i < 200; i++) {
         generateAnt();
         updatePheromones();
         updateTsmResult(result);
+        clear();
+        std::cout << "\tsize ant " <<ants_.size()<< "\n";
     }
     return result;
 }

@@ -77,5 +77,16 @@ Matrix& Matrix::operator*=(const double value) {
     return *this;
 }
 
+void Matrix::print() {
+    for (int i = 0; i < rows_; i++) {
+        for (int j = 0; j < cols_; j++) {
+            std::cout << matrix_[i][j] << "\t";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}
+
+
 
 }  // namespace s21

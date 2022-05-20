@@ -20,7 +20,7 @@ struct TsmResult {
 class GraphAlgorithms {
  private:
     Graph graph_;
-    Matrix pheromones_{graph_.getMatrix()};
+    Matrix pheromones_;
     std::vector<Ant *> ants_;
 
     void initPheromones();
@@ -28,16 +28,19 @@ class GraphAlgorithms {
     void generateAnt();
     void updatePheromones();
     void updateTsmResult(TsmResult &result);
-    std::vector<int> &findDistance(double pathTemp);
+    std::vector<int> findDistance(double pathTemp);
+    void clear();
 
  public:
-    GraphAlgorithms(Graph graph) : graph_(graph) {}
+    GraphAlgorithms() {}
     ~GraphAlgorithms() {}
 
-    const std::vector<int> &breadthFirstSearch(Graph &graph, int startVertex);
-    const std::vector<int> &depthFirstSearch(Graph &graph, int startVertex);
+    const std::vector<int> breadthFirstSearch(Graph &graph, int startVertex);
+    const std::vector<int> depthFirstSearch(Graph &graph, int startVertex);
     const double getShortestPathBetweenVertices(Graph &graph, int vertex1, int vertex2);
-    const struct TsmResults &solveTravelingSalesmanProblem(Graph &graph);
+    const TsmResult solveTravelingSalesmanProblem(Graph &graph);
 };
 
 }  // namespace s21
+
+#include "s21_graph_algorithms.inl"

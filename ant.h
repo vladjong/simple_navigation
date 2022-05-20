@@ -15,8 +15,8 @@ const double kP = 0.5;
 
 class Ant {
  private:
-    double lmin_;
-    int position_;
+    double lmin_ {0};
+    int position_{0};
     Matrix pheromones_;
     Matrix matrixGraph_;
     std::vector<bool> tabu_;
@@ -24,11 +24,12 @@ class Ant {
 
     void initTabu();
     void chooseWay(std::map<int, double>& probabilities);
-    const std::map<int, double>& calculateProbabilityWays();
-    const std::map<int, double>& Ant::determAvalibleWays();
+    const std::map<int, double> calculateProbabilityWays();
+    const std::map<int, double> determAvalibleWays();
     double calculateProbability(std::map<int, double>& avalibleWays, int index);
     void calculatePath(const std::vector<int>& path);
     void updatePheromones(const std::vector<int>& path);
+    void clear();
 
  public:
     Ant(int position_, Matrix pheromones, Matrix matrixGraph)
@@ -44,4 +45,4 @@ class Ant {
 
 }  // namespace s21
 
-// #include "ant.inl"
+#include "ant.inl"
