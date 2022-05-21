@@ -15,8 +15,8 @@ const double kP = 0.5;
 
 class Ant {
  private:
-    double lmin_ {0};
-    int position_{0};
+    double lmin_;
+    int position_;
     Matrix pheromones_;
     Matrix matrixGraph_;
     std::vector<bool> tabu_;

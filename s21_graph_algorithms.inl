@@ -94,11 +94,13 @@ void GraphAlgorithms::generateAnt() {
 }
 
 void GraphAlgorithms::updatePheromones() {
+    Matrix pheromonesTemp(pheromones_.getRows(), pheromones_.getRows());
     for (int i = 0; i < graph_.getSize(); i++) {
         ants_[i]->runAlgorithm();
-        pheromones_ += ants_[i]->getPheromones();
+        pheromonesTemp += ants_[i]->getPheromones();
     }
-    pheromones_ *= 1.0 /graph_.getSize();
+    pheromonesTemp *= 1.0 /graph_.getSize();
+    pheromones_ = pheromonesTemp;
     pheromones_.print();
 }
 
@@ -117,7 +119,6 @@ void GraphAlgorithms::updateTsmResult(TsmResult &result) {
     std::vector<double> path;
     for (int i = 0; i < graph_.getSize(); i++) {
         path.push_back(ants_[i]->getLmin());
-        std::cout << ants_[i]->getLmin() << " ";
     }
     auto minElement = std::min_element(path.begin(), path.end());
     if (*minElement < result.distance) {
@@ -139,12 +140,11 @@ const TsmResult GraphAlgorithms::solveTravelingSalesmanProblem(Graph &graph) {
     pheromones_ = graph_.getMatrix();
     initPheromones();
     TsmResult result;
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < 30; i++) {
         generateAnt();
         updatePheromones();
         updateTsmResult(result);
         clear();
-        std::cout << "\tsize ant " <<ants_.size()<< "\n";
     }
     return result;
 }

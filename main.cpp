@@ -8,7 +8,8 @@
 
 int main() {
     s21::Graph graph;
-    graph.loadGraphFromFile("/opt/goinfre/adough/simple_navigator/1.txt");
+    graph.loadGraphFromFile("1.txt");
     s21::GraphAlgorithms al;
-    al.solveTravelingSalesmanProblem(graph);
+    s21::TsmResult st = al.solveTravelingSalesmanProblem(graph);
+    std::cout << "distance: " << st.distance;
 }

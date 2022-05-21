@@ -35,14 +35,11 @@ const std::map<int, double> Ant::calculateProbabilityWays() {
     std::map<int, double> avalibleWays = determAvalibleWays();
     double currentProbability = 0;
     for (auto it = avalibleWays.begin(); it != avalibleWays.end(); ++it) {
-        std::cout << it->first << " " << it->second << "\n";
     }
     for (auto it = avalibleWays.begin(); it != avalibleWays.end(); ++it) {
         currentProbability += calculateProbability(avalibleWays, it->first);
-        std::cout << currentProbability << " ";
         probabilities.insert(std::make_pair(it->first, currentProbability));
     }
-    std::cout << "\n";
     return probabilities;
 }
 
@@ -58,7 +55,6 @@ void Ant::chooseWay(std::map<int, double>& probabilities) {
         position_ = probabilities.begin()->first;
     }
     double random = randomChoose();
-    std::cout << "random " << random << "\n";
     for (auto it = probabilities.begin(); it != probabilities.end(); ++it) {
         if (random <= it->second) {
             position_ = it->first;
@@ -68,13 +64,9 @@ void Ant::chooseWay(std::map<int, double>& probabilities) {
 }
 
 void Ant::calculatePath(const std::vector<int>& path) {
-    std::cout << lmin_ << "\n";
-    std::cout << "PAS: " << path[0] <<  path[1] <<  path[2] <<  path[3] << "\n"; 
     for (int i = 0; i < path.size() - 1; i++) {
         lmin_ += matrixGraph_(path[i], path[i + 1]);
-        std::cout << lmin_ << " ";
     }
-    std::cout << "\n";
     lmin_ += matrixGraph_(path[path.size() - 1], path[0]);
     std::cout << "result: " << lmin_ << "\n";
 }
@@ -99,7 +91,6 @@ void Ant::runAlgorithm() {
         path_.push_back(position_);
     }
     calculatePath(path_);
-    // pheromones_.print();
     updatePheromones(path_);
     pheromones_.print();
     std::cout << "path: ";

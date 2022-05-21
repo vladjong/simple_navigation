@@ -11,7 +11,7 @@ namespace s21 {
 class Graph {
  private:
     Matrix matrix_;
-    int size_{0};
+    int size_;
 
  public:
     Graph() {}

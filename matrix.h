@@ -21,8 +21,10 @@ class Matrix {
     Matrix operator=(const Matrix& other);
     double& operator()(int i, int j);
     void sum_matrix(const Matrix& other);
+    void sub_matrix(const Matrix& other);
     void mul_number(const double num);
     Matrix& operator+=(const Matrix& other);
+    Matrix& operator-=(const Matrix& other);
     Matrix& operator*=(const double value);
 
     void print();

@@ -59,6 +59,17 @@ void Matrix::sum_matrix(const Matrix& other) {
     }
 }
 
+void Matrix::sub_matrix(const Matrix& other) {
+    if (rows_ != other.rows_ || cols_ != other.cols_) {
+        throw std::out_of_range("Incorrect input, matrices should have the same size");
+    }
+    for (int i = 0; i < rows_; i++) {
+        for (int j = 0; j < cols_; j++) {
+            matrix_[i][j] = matrix_[i][j] - other.matrix_[i][j];
+        }
+    }
+}
+
 void Matrix::mul_number(const double num) {
     for (int i = 0; i < rows_; i++) {
         for (int j = 0; j < cols_; j++) {
@@ -69,6 +80,11 @@ void Matrix::mul_number(const double num) {
 
 Matrix& Matrix::operator+=(const Matrix& other) {
     sum_matrix(other);
+    return *this;
+}
+
+Matrix& Matrix::operator-=(const Matrix& other) {
+    sub_matrix(other);
     return *this;
 }
 
